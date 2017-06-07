@@ -10,6 +10,8 @@ namespace DataProtection.Interop.Win
     [SuppressUnmanagedCodeSecurity]
     internal unsafe static class Crypt32
     {
+        internal const uint CRYPTPROTECT_UI_FORBIDDEN = 0x1;
+        internal const uint CRYPTPROTECT_LOCAL_MACHINE = 0x4;
         private const string CRYPT32_LIB = "crypt32.dll";
         [DllImport(CRYPT32_LIB, CallingConvention = CallingConvention.Winapi, SetLastError = true)]
         // http://msdn.microsoft.com/en-us/library/windows/desktop/aa380261(v=vs.85).aspx
@@ -32,6 +34,5 @@ namespace DataProtection.Interop.Win
             [In] IntPtr pPromptStruct,
             [In] uint dwFlags,
             [Out] out DATA_BLOB pDataOut);
-
     }
 }

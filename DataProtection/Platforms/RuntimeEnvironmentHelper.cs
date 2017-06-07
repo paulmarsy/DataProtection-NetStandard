@@ -4,7 +4,8 @@ using System.Text;
 
 namespace DataProtection
 {
-    class RuntimeEnvironmentHelper
+    public static class RuntimeEnvironmentHelper
     {
+        public static string AccountName => Environment.UserName;
     }
 }

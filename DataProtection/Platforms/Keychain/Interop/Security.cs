@@ -7,7 +7,7 @@ namespace DataProtection.Platforms.Mac.Interop
 {
    internal  static class Security
     {
-        const string SecurityLib = "/System/Library/Frameworks/Security.framework/Security";
+       private const string SecurityLib = "/System/Library/Frameworks/Security.framework/Security";
         
         [DllImport(SecurityLib)]
        internal static extern SecStatusCode SecKeychainAddGenericPassword(IntPtr keychain, uint serviceNameLength, string serviceName,
