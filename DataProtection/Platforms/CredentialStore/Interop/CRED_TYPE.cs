@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DataProtection.Platforms.CredentialStore.Interop
+﻿namespace DataProtection.Platforms.CredentialStore.Interop
 {
     internal enum CRED_TYPE : uint
     {
@@ -13,6 +9,6 @@ namespace DataProtection.Platforms.CredentialStore.Interop
         CRED_TYPE_GENERIC_CERTIFICATE = 5,
         CRED_TYPE_DOMAIN_EXTENDED = 6,
         CRED_TYPE_MAXIMUM = 7,
-        CRED_TYPE_MAXIMUM_EX = (CRED_TYPE_MAXIMUM + 1000)
+        CRED_TYPE_MAXIMUM_EX = CRED_TYPE_MAXIMUM + 1000
     }
 }

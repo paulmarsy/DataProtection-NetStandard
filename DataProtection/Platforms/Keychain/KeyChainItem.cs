@@ -1,14 +1,14 @@
 ﻿using System;
-using DataProtection.Platforms.Mac.Interop;
 using System.Security;
+using DataProtection.Platforms.Mac.Interop;
 
 namespace DataProtection.Platforms.Mac
 {
     public class KeyChainItem : IDisposable
     {
-        public uint PasswordLength;
-        public IntPtr PasswordData;
         public IntPtr ItemRef;
+        public IntPtr PasswordData;
+        public uint PasswordLength;
 
         private KeyChainItem(uint passwordLength, IntPtr passwordData, IntPtr itemRef)
         {
@@ -32,13 +32,13 @@ namespace DataProtection.Platforms.Mac
             var status = Security.SecKeychainFindGenericPassword(
                 IntPtr.Zero,
                 (uint) id.Length,
-                id, 
-               (uint) RuntimeEnvironmentHelper.AccountName.Length,
+                id,
+                (uint) RuntimeEnvironmentHelper.AccountName.Length,
                 RuntimeEnvironmentHelper.AccountName,
                 out uint passwordLength,
                 out IntPtr passwordData,
                 ref itemRef);
-            if (status != SecStatusCode.Success)
+            if (status != SecStatusCode.Success && status != SecStatusCode.ItemNotFound)
                 throw new SecurityException(status.ToString());
 
             return new KeyChainItem(passwordLength, passwordData, itemRef);

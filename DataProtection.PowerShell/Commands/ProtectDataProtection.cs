@@ -1,18 +1,13 @@
-﻿using System;
 using System.Management.Automation;
 
 namespace DataProtection.PowerShell
 {
     [Cmdlet(VerbsSecurity.Protect, nameof(DataProtection))]
-    public class ProtectDataProtection : PSCmdlet
+    public class ProtectDataProtection : BaseDataProtectionCmdlet
     {
-        [Parameter(ValueFromPipeline = true, Position = 0)]
-        public string InputObject { get; set; }
-
-        protected override void ProcessRecord()
+        protected override string ProcesInput(string inputObject)
         {
-            if (string.IsNullOrWhiteSpace(InputObject))
-                return;
+            return ProtectedData.Protect(inputObject);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using DataProtection.Abstractions;
+using DataProtection.Platforms.Mac;
+using DataProtection.Platforms.Win;
 
 namespace DataProtection.Platforms.CredentialStore
 {
@@ -9,12 +9,20 @@ namespace DataProtection.Platforms.CredentialStore
     {
         public IDataProtector GetDataProtector()
         {
-            throw new NotImplementedException();
+            if (RuntimeEnvironmentHelper.IsWindows())
+                return new DpapiDataProtector();
+
+            throw new PlatformNotSupportedException();
         }
 
         public IVault GetVault()
         {
-            throw new NotImplementedException();
+            if (RuntimeEnvironmentHelper.IsWindows())
+                return new CredentialStoreVault();
+            if (RuntimeEnvironmentHelper.IsOSX())
+                return new KeyChainVault();
+
+            throw new PlatformNotSupportedException();
         }
     }
 }

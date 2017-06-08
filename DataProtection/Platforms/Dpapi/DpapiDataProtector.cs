@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using DataProtection.Abstractions;
-using DataProtection.Platforms.Win.Interop;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using DataProtection.Abstractions;
 using DataProtection.Interop.Win;
+using DataProtection.Platforms.Win.Interop;
 
 namespace DataProtection.Platforms.Win
 {
@@ -17,7 +14,15 @@ namespace DataProtection.Platforms.Win
         {
             fixed (byte* pbPlaintextSecret = plaintext)
             {
-                return ProtectWithDpapi(pbPlaintextSecret, (uint) plaintext.Length, fLocalMachine: false);
+                return ProtectWithDpapi(pbPlaintextSecret, (uint) plaintext.Length, false);
+            }
+        }
+
+        public byte[] Unprotect(byte[] protectedData)
+        {
+            fixed (byte* pbProtectedData = protectedData)
+            {
+                return UnprotectWithDpapi(pbProtectedData, (uint) protectedData.Length);
             }
         }
 
@@ -25,10 +30,10 @@ namespace DataProtection.Platforms.Win
         {
             byte dummy; // provides a valid memory address if the secret or entropy has zero length
 
-            var dataIn = new DATA_BLOB()
+            var dataIn = new DATA_BLOB
             {
                 cbData = cbSecret,
-                pbData = (pbSecret != null) ? pbSecret : &dummy
+                pbData = pbSecret != null ? pbSecret : &dummy
             };
             var dataOut = default(DATA_BLOB);
 
@@ -42,7 +47,7 @@ namespace DataProtection.Platforms.Win
                     IntPtr.Zero,
                     IntPtr.Zero,
                     IntPtr.Zero,
-                    Crypt32.CRYPTPROTECT_UI_FORBIDDEN | ((fLocalMachine) ? Crypt32.CRYPTPROTECT_LOCAL_MACHINE : 0),
+                    Crypt32.CRYPTPROTECT_UI_FORBIDDEN | (fLocalMachine ? Crypt32.CRYPTPROTECT_LOCAL_MACHINE : 0),
                     out dataOut);
                 if (!success)
                     throw new CryptographicException(Marshal.GetLastWin32Error());
@@ -59,22 +64,14 @@ namespace DataProtection.Platforms.Win
             }
         }
 
-        public byte[] Unprotect(byte[] protectedData)
-        {
-            fixed (byte* pbProtectedData = protectedData)
-            {
-                return UnprotectWithDpapi(pbProtectedData, (uint) protectedData.Length);
-            }
-        }
-
         private byte[] UnprotectWithDpapi(byte* pbProtectedData, uint cbProtectedData)
         {
             byte dummy; // provides a valid memory address if the secret or entropy has zero length
 
-            var dataIn = new DATA_BLOB()
+            var dataIn = new DATA_BLOB
             {
                 cbData = cbProtectedData,
-                pbData = (pbProtectedData != null) ? pbProtectedData : &dummy
+                pbData = pbProtectedData != null ? pbProtectedData : &dummy
             };
             var dataOut = default(DATA_BLOB);
 

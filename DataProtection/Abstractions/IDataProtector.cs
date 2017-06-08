@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DataProtection.Abstractions
+﻿namespace DataProtection.Abstractions
 {
     public interface IDataProtector
     {

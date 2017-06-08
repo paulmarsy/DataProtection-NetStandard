@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace DataProtection.Platforms.CredentialStore.Interop
 {
@@ -13,11 +11,13 @@ namespace DataProtection.Platforms.CredentialStore.Interop
 
         [DllImport(ADVAPI32_LIB, SetLastError = true)]
         internal static extern bool CredDelete([In] string TargetName, [In] CRED_TYPE Type, [In] int Flags);
+
         [DllImport(ADVAPI32_LIB, SetLastError = true)]
         internal static extern bool CredRead([In] string TargetName, [In] CRED_TYPE Type, [In] int Flags, [Out] out IntPtr Credential);
 
         [DllImport(ADVAPI32_LIB, SetLastError = true)]
-        internal static extern bool CredWrite([In] ref CREDENTIAL Credential, [In] UInt32 Flags);
+        internal static extern bool CredWrite([In] ref CREDENTIAL Credential, [In] uint Flags);
+
         [DllImport(ADVAPI32_LIB, SetLastError = true)]
         internal static extern void CredFree([In] IntPtr Buffer);
     }

@@ -1,26 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using DataProtection.Abstractions;
-using DataProtection.Platforms.Mac.Interop;
 using System.Runtime.InteropServices;
 using System.Security;
+using DataProtection.Abstractions;
+using DataProtection.Platforms.Mac.Interop;
 
 namespace DataProtection.Platforms.Mac
 {
     public class KeyChainVault : IVault
     {
-        public bool Exists(string id)
+        public bool Exists(string key)
         {
-            using (var keychainItem = KeyChainItem.FindGenericPassword(id))
+            using (var keychainItem = KeyChainItem.FindGenericPassword(key))
             {
                 return keychainItem.ItemRef != IntPtr.Zero;
             }
         }
 
-        public void Delete(string id)
+        public void Delete(string key)
         {
-            using (var keychainItem = KeyChainItem.FindGenericPassword(id))
+            using (var keychainItem = KeyChainItem.FindGenericPassword(key))
             {
                 if (keychainItem.ItemRef == IntPtr.Zero)
                     throw new KeyNotFoundException();
@@ -31,9 +30,9 @@ namespace DataProtection.Platforms.Mac
             }
         }
 
-        public byte[] Get(string id)
+        public byte[] Get(string key)
         {
-            using (var keychainItem = KeyChainItem.FindGenericPassword(id))
+            using (var keychainItem = KeyChainItem.FindGenericPassword(key))
             {
                 if (keychainItem.ItemRef == IntPtr.Zero)
                     throw new KeyNotFoundException();
@@ -44,15 +43,15 @@ namespace DataProtection.Platforms.Mac
             }
         }
 
-        public void Put(string id, byte[] buffer)
+        public void Put(string key, byte[] buffer)
         {
-            using (var keychainItem = KeyChainItem.FindGenericPassword(id))
+            using (var keychainItem = KeyChainItem.FindGenericPassword(key))
             {
                 var status = keychainItem.ItemRef == IntPtr.Zero
                     ? Security.SecKeychainAddGenericPassword(
                         IntPtr.Zero,
-                        (uint) id.Length,
-                        id,
+                        (uint) key.Length,
+                        key,
                         (uint) RuntimeEnvironmentHelper.AccountName.Length,
                         RuntimeEnvironmentHelper.AccountName,
                         (uint) buffer.Length,

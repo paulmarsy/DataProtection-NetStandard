@@ -1,58 +1,51 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Text;
+using System.Runtime.InteropServices;
 using DataProtection.Abstractions;
 using DataProtection.Platforms.CredentialStore.Interop;
-using System.Runtime.InteropServices;
 
 namespace DataProtection.Platforms.CredentialStore
 {
     public unsafe class CredentialStoreVault : IVault
     {
-        public void Delete(string id)
+        public void Delete(string key)
         {
-            var success = Advapi32.CredDelete(id, CRED_TYPE.CRED_TYPE_GENERIC, 0);
+            var success = Advapi32.CredDelete(key, CRED_TYPE.CRED_TYPE_GENERIC, 0);
             if (!success)
                 throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
-        public bool Exists(string id)
+        public bool Exists(string key)
         {
-            return Get(id) != null;
+            return Get(key) != null;
         }
 
-        public byte[] Get(string id)
+        public byte[] Get(string key)
         {
-        ///    Debugger.Launch();
-        //    Debugger.Break();
-            var success = Advapi32.CredRead(id, CRED_TYPE.CRED_TYPE_GENERIC, 0, out IntPtr credentialPtr);
+            var success = Advapi32.CredRead(key, CRED_TYPE.CRED_TYPE_GENERIC, 0, out IntPtr credentialPtr);
             if (!success)
                 throw new Win32Exception(Marshal.GetLastWin32Error());
 
             using (var criticalCredentialHandle = new CriticalCredentialHandle(credentialPtr))
             {
                 var credential = criticalCredentialHandle.GetCredential();
-                
+
                 var buffer = new byte[credential.CredentialBlobSize];
-                Marshal.Copy((IntPtr)credential.CredentialBlob, buffer, 0, (int)credential.CredentialBlobSize);
+                Marshal.Copy((IntPtr) credential.CredentialBlob, buffer, 0, (int) credential.CredentialBlobSize);
 
                 return buffer;
             }
         }
 
-        public void Put(string id, byte[] blob)
+        public void Put(string key, byte[] blob)
         {
-            if (blob.Length > Advapi32.CRED_MAX_CREDENTIAL_BLOB_SIZE)
-                throw new ArgumentOutOfRangeException(nameof(blob), "CRED_MAX_CREDENTIAL_BLOB_SIZE");
             fixed (byte* blobPtr = blob)
             {
-                var credential = new CREDENTIAL()
+                var credential = new CREDENTIAL
                 {
                     Flags = 0x0,
                     Type = CRED_TYPE.CRED_TYPE_GENERIC,
-                    TargetName = id,
+                    TargetName = key,
                     Comment = null,
                     TargetAlias = null,
                     CredentialBlobSize = (uint) blob.Length,

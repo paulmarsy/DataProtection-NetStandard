@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DataProtection.Abstractions
+﻿namespace DataProtection.Abstractions
 {
     public interface IVault
     {
-        bool Exists(string id);
-        byte[] Get(string id);
-        void Put(string id, byte[] blob);
-        void Delete(string id);
+        bool Exists(string key);
+        byte[] Get(string key);
+        void Put(string key, byte[] blob);
+        void Delete(string key);
     }
 }
